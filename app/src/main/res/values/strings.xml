@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MarvelApp</string>
+    <string name="background_image">Background image</string>
+    <string name="error_message">We\'ve found an error loading the data!!</string>
+    <string name="size_parameter">landscape_xlarge.jpg</string>
+    <string name="no_description">No description available</string>
+</resources>
