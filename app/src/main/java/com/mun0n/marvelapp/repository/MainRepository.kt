@@ -8,14 +8,15 @@ import java.lang.Exception
 import java.util.*
 
 
-class MainRepository(private val marvelApi: MarvelApi) : Repository {
-
-    private val timestamp = Date().time
+class MainRepository(
+    private val marvelApi: MarvelApi,
+    date: Date = Date()
+) : Repository {
 
     private var queryMap: Map<String, String> = mapOf(
-        "ts" to timestamp.toString(),
+        "ts" to date.time.toString(),
         "apikey" to BuildConfig.MARVEL_PUBLIC_KEY,
-        "hash" to "${timestamp}${BuildConfig.MARVEL_PRIVATE_KEY}${BuildConfig.MARVEL_PUBLIC_KEY}".md5()
+        "hash" to "${date.time}${BuildConfig.MARVEL_PRIVATE_KEY}${BuildConfig.MARVEL_PUBLIC_KEY}".md5()
     )
 
     suspend fun loadMarvelCharacters(offset: Int): CharacterResponse? {

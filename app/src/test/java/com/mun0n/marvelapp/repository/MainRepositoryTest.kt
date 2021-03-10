@@ -4,9 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.mun0n.marvelapp.BuildConfig
 import com.mun0n.marvelapp.TestCoroutineRule
 import com.mun0n.marvelapp.data.model.CharactersMock
-import com.mun0n.marvelapp.model.Resource
 import com.mun0n.marvelapp.network.MarvelApi
-import com.mun0n.marvelapp.ui.main.MainViewModel
 import com.mun0n.marvelapp.util.md5
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
@@ -21,6 +19,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations.initMocks
 import org.mockito.junit.MockitoJUnitRunner
+import java.util.*
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -35,15 +34,20 @@ class MainRepositoryTest {
     @Mock
     private lateinit var marvelApi: MarvelApi
 
-    private val options = mapOf<String, String>(
-        "ts" to "1",
-        "apikey" to BuildConfig.MARVEL_PUBLIC_KEY,
-        "hash" to "1${BuildConfig.MARVEL_PRIVATE_KEY}${BuildConfig.MARVEL_PUBLIC_KEY}".md5()
-    )
+    private lateinit var date: Date
+
+    private lateinit var options: Map<String, String>
+
 
     @Before
     fun setUp() {
         initMocks(this)
+        date = Date()
+        options = mapOf(
+            "ts" to date.time.toString(),
+            "apikey" to BuildConfig.MARVEL_PUBLIC_KEY,
+            "hash" to "${date.time}${BuildConfig.MARVEL_PRIVATE_KEY}${BuildConfig.MARVEL_PUBLIC_KEY}".md5()
+        )
     }
 
     @Test
@@ -55,7 +59,7 @@ class MainRepositoryTest {
                     options,
                     offset = 0
                 )
-            val mainRepository = MainRepository(marvelApi)
+            val mainRepository = MainRepository(marvelApi, date)
             val response = mainRepository.loadMarvelCharacters(0)
             verify(marvelApi).fetchMarvelCharacters(options, offset = 0)
             assertEquals(response, CharactersMock.CHARACTER_RESPONSE)
@@ -72,7 +76,7 @@ class MainRepositoryTest {
                     options,
                     offset = 0
                 )
-            val mainRepository = MainRepository(marvelApi)
+            val mainRepository = MainRepository(marvelApi, date)
             val response = mainRepository.loadMarvelCharacters(offset = 0)
             verify(marvelApi).fetchMarvelCharacters(options, offset = 0)
             assertNull(response)
